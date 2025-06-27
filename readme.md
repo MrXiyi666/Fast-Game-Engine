@@ -19,6 +19,7 @@ Fun.Create(this);
 用于初始化游戏引擎
 #
 添加一个窗口
+```Lua
 window_base = Java:Window();
 window_base:setSize(70, 30);
 window_base:setXY(15,30);
@@ -26,3 +27,4 @@ window_base:setWindowTitle(true);
 Java:addWindow(window_base);
 window_base.Close = function() Java:removeWindow(self.window_base); end;
 window_base.Up = function() Java:Mess("点击了"); end;
+```
