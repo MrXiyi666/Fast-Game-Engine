@@ -4,9 +4,7 @@ package fast.game.engine.control;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
-import android.util.Log;
+import android.graphics.drawable.GradientDrawable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,39 +12,37 @@ import android.view.ViewTreeObserver;
 import androidx.appcompat.widget.AppCompatButton;
 import org.luaj.vm2.LuaValue;
 import fast.game.engine.fun.Fun;
-import fast.game.engine.window.Fun_Window;
 
 public class Fun_Button extends AppCompatButton {
-    private Paint paint;
     private int widthPercentage = 0;
     private int heightPercentage = 0;
     private int xPercentage=0, yPercentage=0;
     public boolean update = false;
     private Fun_Button fun;
-    private Fun_Window parentView;
+    private ViewGroup parentView;
     private int Fu_Width=0,Fu_Height=0;
+    public int ba=150, br=0, bg=0, bb=0;
+    public int window_radius=20;
     private ViewTreeObserver.OnGlobalLayoutListener layoutListener;
     public LuaValue Click=null, Down=null, Up=null, Move=null;
     public Fun_Button(Context context) {
         super(context);
         fun = this;
         this.setId(View.generateViewId());
-        paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setColor(Color.argb(192,0,0,0));
-        this.setBackgroundColor(Color.TRANSPARENT);
         this.setTextColor(Color.WHITE);
+        this.setBackgroundColor(Color.TRANSPARENT);
         this.setOnClickListener(view -> {
             if(Click != null && Click.isfunction()){
                 Click.call();
             }
         });
+        // 创建带圆角的背景
+        GradientDrawable background = new GradientDrawable();
+        background.setCornerRadius(Fun.DpToPx(window_radius));
+        background.setColor(Color.argb(ba,br,bg,bb));
+        this.setBackground(background);
+        this.setClipToOutline(true);
 
-    }
-
-    public void setColor(int a, int r, int g, int b){
-        paint.setColor(Color.argb(a,r,g,b));
-        invalidate();
     }
 
     @Override
@@ -54,7 +50,15 @@ public class Fun_Button extends AppCompatButton {
         super.setTextSize(Fun.DpToPx(size));
         invalidate();
     }
-
+    public void setColor(int a, int r, int g, int b){
+        ba=a;br=r;bg=g;bb=b;
+        // 创建带圆角的背景
+        GradientDrawable background = new GradientDrawable();
+        background.setCornerRadius(Fun.DpToPx(window_radius));
+        background.setColor(Color.argb(ba,br,bg,bb));
+        this.setBackground(background);
+        this.setClipToOutline(true);
+    }
     public void setTextColor(int a, int r, int g, int b){
         this.setTextColor(Color.argb(a,r,g,b));
         invalidate();
@@ -63,38 +67,35 @@ public class Fun_Button extends AppCompatButton {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         // 获取父布局
-        parentView = (Fun_Window) getParent();
-        if (parentView != null) {
-            layoutListener = () -> {
-                int parentWidth = parentView.getWidth();
-                int parentHeight = parentView.getHeight() + parentView.getPaddingTop();
-                if (Fu_Width != parentWidth || Fu_Height !=parentHeight) {
-                    int x = (int) (Fu_Width * fun.xPercentage / 100.0f);
-                    int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
-                    fun.setX(x);
-                    fun.setY(y);
-                    ViewGroup.LayoutParams params = fun.getLayoutParams();
-                    params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
-                    params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
-                    fun.setLayoutParams(params);
-                    Log.w("窗口", "测量了");
-                }
-                Fu_Width = parentWidth;
-                Fu_Height = parentHeight;
-                Log.w("窗口", "测量结束");
-            };
-            // 添加监听器
-            parentView.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+        parentView =  (ViewGroup)getParent();
+        if (parentView == null) {
+            return;
         }
+        layoutListener = () -> {
+            int parentWidth = parentView.getWidth();
+            int parentHeight = parentView.getHeight();
+            if (Fu_Width != parentWidth || Fu_Height !=parentHeight) {
+                int x = (int) (Fu_Width * fun.xPercentage / 100.0f);
+                int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
+                fun.setX(x);
+                fun.setY(y);
+                ViewGroup.LayoutParams params = fun.getLayoutParams();
+                params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
+                params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
+                fun.setLayoutParams(params);
+            }
+            Fu_Width = parentWidth;
+            Fu_Height = parentHeight;
+        };
+        // 添加监听器
+        parentView.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        // 移除监听器
         if (parentView != null && parentView.getViewTreeObserver().isAlive()) {
             parentView.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
-            Log.w("窗口", "移除了");
         }
     }
 
@@ -117,7 +118,6 @@ public class Fun_Button extends AppCompatButton {
             int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
             fun.setX(x);
             fun.setY(y);
-            requestLayout();
         });
 
     }
@@ -131,7 +131,6 @@ public class Fun_Button extends AppCompatButton {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawRoundRect(new RectF(0,0,getWidth(), getHeight()), Fun.DpToPx(20), Fun.DpToPx(20), paint);
         super.onDraw(canvas);
     }
 

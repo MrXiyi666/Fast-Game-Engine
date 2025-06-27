@@ -5,91 +5,65 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
+import android.view.ViewTreeObserver;
 import androidx.annotation.NonNull;
 import org.luaj.vm2.LuaValue;
-import fast.game.engine.fun.Fun;
 
 public class Fast_View extends View {
-    public Paint paint;
-    private int widthPercentage = 1, widthMeasureSpec=1;
-    private int heightPercentage = 1, heightMeasureSpec=1;
+    private int widthPercentage = 0;
+    private int heightPercentage = 0;
+    private int xPercentage=0, yPercentage=0;
     public boolean update = false;
     public LuaValue Down=null;
     public LuaValue Up=null;
     public LuaValue Move=null;
     public LuaValue Draw=null;
-    public int ba=192,br=0,bg=0,bb=0;
-
+    private int Fu_Width=0,Fu_Height=0;
+    private Fast_View fun;
+    private ViewTreeObserver.OnGlobalLayoutListener layoutListener;
+    private ViewGroup parentView;
     public Fast_View(Context context) {
         super(context);
+        fun = this;
         this.setId(View.generateViewId());
-        paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setColor(Color.argb(ba,br,bg,bb));
     }
     public int getTextHeight(String text){
+        Paint paint = new Paint();
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
         // 获取文本高度
         return bounds.height();
     }
     public int getTextWidth(String text){
+        Paint paint = new Paint();
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
-        // 获取文本宽度
         return bounds.width();
     }
     public void setSize(int widthPercentage, int heightPercentage) {
         this.widthPercentage = widthPercentage;
         this.heightPercentage = heightPercentage;
-        post(() -> {
-            ViewParent parent = getParent();
-            if (parent instanceof ViewGroup parentViewGroup) {
-                // 获取父ViewGroup的宽高
-                int parentWidth = parentViewGroup.getWidth();
-                int parentHeight = parentViewGroup.getHeight();
-
-                // 如果父ViewGroup的宽高尚未确定，则不进行位置调整
-                if (parentWidth > 0 && parentHeight > 0) {
-                    // 计算当前View的宽高
-                    int width = parentWidth * this.widthPercentage / 100;
-                    int height = parentHeight * this.heightPercentage / 100;
-
-                    // 确保计算的宽高符合MeasureSpec的要求
-                    width = Math.min(width, MeasureSpec.getSize(this.widthMeasureSpec));
-                    height = Math.min(height, MeasureSpec.getSize(this.heightMeasureSpec));
-                    setMeasuredDimension(width, height);
-                    requestLayout();
-                }
-            }
+        post(()->{
+            ViewGroup.LayoutParams params = fun.getLayoutParams();
+            params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
+            params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
+            fun.setLayoutParams(params);
         });
+
     }
     public void setXY(int xPercentage, int yPercentage) {
-        post(() -> {
-            ViewParent parent = getParent();
-            if (parent instanceof ViewGroup parentViewGroup) {
-
-                // 获取父ViewGroup的宽高
-                int parentWidth = parentViewGroup.getWidth();
-                int parentHeight = parentViewGroup.getHeight();
-
-                // 如果父ViewGroup的宽高尚未确定，则不进行位置调整
-                if (parentWidth > 0 && parentHeight > 0) {
-                    // 计算当前View的绘制位置
-                    int x = (int) (parentWidth * xPercentage / 100.0f);
-                    int y = (int) (parentHeight * yPercentage / 100.0f);
-
-                    // 设置当前View的位置
-                    setX(x);
-                    setY(y);
-                }
-            }
+        this.xPercentage = xPercentage;
+        this.yPercentage = yPercentage;
+        post(()->{
+            int x = (int) (Fu_Width * fun.xPercentage / 100.0f);
+            int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
+            fun.setX(x);
+            fun.setY(y);
         });
+
     }
     public void show(){
         this.setVisibility(View.VISIBLE);
@@ -99,36 +73,44 @@ public class Fast_View extends View {
         this.setVisibility(View.GONE);
     }
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        this.widthMeasureSpec = widthMeasureSpec;
-        this.heightMeasureSpec = heightMeasureSpec;
-        super.onMeasure(widthMeasureSpec,heightMeasureSpec);
-        ViewParent parent = getParent();
-        if (parent instanceof ViewGroup parentViewGroup) {
-            // 获取父ViewGroup的宽高
-            int parentWidth = parentViewGroup.getWidth();
-            int parentHeight = parentViewGroup.getHeight();
-
-            // 如果父ViewGroup的宽高尚未确定，则不进行位置调整
-            if (parentWidth > 0 && parentHeight > 0) {
-                // 计算当前View的宽高
-                int width = parentWidth * this.widthPercentage / 100;
-                int height = parentHeight * this.heightPercentage / 100;
-
-                // 确保计算的宽高符合MeasureSpec的要求
-                width = Math.min(width, MeasureSpec.getSize(this.widthMeasureSpec));
-                height = Math.min(height, MeasureSpec.getSize(this.heightMeasureSpec));
-                setMeasuredDimension(width, height);
-                requestLayout();
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        // 获取父布局
+        parentView =  (ViewGroup)getParent();
+        if (parentView == null) {
+            return;
+        }
+        layoutListener = () -> {
+            int parentWidth = parentView.getWidth();
+            int parentHeight = parentView.getHeight();
+            if (Fu_Width != parentWidth || Fu_Height !=parentHeight) {
+                int x = (int) (Fu_Width * fun.xPercentage / 100.0f);
+                int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
+                fun.setX(x);
+                fun.setY(y);
+                ViewGroup.LayoutParams params = fun.getLayoutParams();
+                params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
+                params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
+                fun.setLayoutParams(params);
             }
+            Fu_Width = parentWidth;
+            Fu_Height = parentHeight;
+        };
+        // 添加监听器
+        parentView.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+    }
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        // 移除监听器
+        if (parentView != null && parentView.getViewTreeObserver().isAlive()) {
+            parentView.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
         }
     }
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawColor(Color.TRANSPARENT);
-        paint.setColor(Color.argb(ba,br,bg,bb));
-        canvas.drawRoundRect(new RectF(0,0,getWidth(), getHeight()), Fun.DpToPx(20), Fun.DpToPx(20), paint);
         if(Draw != null && Draw.isfunction()){
             Draw.call(LuaValue.userdataOf(canvas));
         }

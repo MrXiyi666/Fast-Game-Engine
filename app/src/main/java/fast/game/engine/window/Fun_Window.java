@@ -5,14 +5,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
-import android.util.Log;
+import android.graphics.drawable.GradientDrawable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.ViewTreeObserver;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import org.luaj.vm2.LuaValue;
@@ -31,27 +28,37 @@ public class Fun_Window extends RelativeLayout {
     public LuaValue Up=null;
     public LuaValue Move=null;
     public LuaValue Draw=null;
-    public int ba=192, br=0, bg=0, bb=0;
+    public int ba=150, br=0, bg=0, bb=0;
     public int ta=255, tr=0, tg=0, tb=0;
     public float rectBottom=0;
-    public LuaValue Close=null;
+    public LuaValue Close=null, Click;
     public int close_a=255, close_r=255, close_g=255, close_b=255;
-    public boolean window_title = true;
+    public boolean window_title = true, window_close;
     private Fun_Window fun;
     private int Fu_Width=0,Fu_Height=0;
     private ViewTreeObserver.OnGlobalLayoutListener layoutListener;
-    private View parentView;
+    private ViewGroup parentView;
     public Fun_Window(Context context) {
         super(context);
         fun = this;
         LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         this.setLayoutParams(layoutParams);
-        this.setBackgroundColor(Color.argb(192, 0,0,0));
         this.setId(View.generateViewId());
         paint = new Paint();
         paint.setAntiAlias(true);
         paint.setColor(Color.argb(ba,br,bg,bb));
-        this.setBackgroundColor(Color.TRANSPARENT);
+        GradientDrawable background = new GradientDrawable();
+        background.setColor(Color.argb(ba,br,bg,bb));
+        background.setCornerRadius(Fun.DpToPx(window_radius));
+        this.setBackground(background);
+        this.setClipToOutline(true);
+        this.setOnClickListener(view -> {
+            if(!window_close){
+                if(Click != null && Click.isfunction()){
+                    Click.call();
+                }
+            }
+        });
     }
     public void addChild(Fast_View view){
         this.addView(view);
@@ -102,30 +109,28 @@ public class Fun_Window extends RelativeLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         // 获取父布局
-        parentView = (View)getParent();
-        if (parentView != null) {
-            layoutListener = () -> {
-                int parentWidth = parentView.getWidth();
-                int parentHeight = parentView.getHeight();
-                parentHeight = parentHeight + parentView.getPaddingTop();
-                if (Fu_Width != parentWidth || Fu_Height !=parentHeight) {
-                    int x = (int) (Fu_Width * fun.xPercentage / 100.0f);
-                    int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
-                    fun.setX(x);
-                    fun.setY(y);
-                    ViewGroup.LayoutParams params = fun.getLayoutParams();
-                    params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
-                    params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
-                    fun.setLayoutParams(params);
-
-                }
-                Fu_Width = parentWidth;
-                Fu_Height = parentHeight;
-
-            };
-            // 添加监听器
-            parentView.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+        parentView =  (ViewGroup)getParent();
+        if (parentView == null) {
+            return;
         }
+        layoutListener = () -> {
+            int parentWidth = parentView.getWidth();
+            int parentHeight = parentView.getHeight();
+            if (Fu_Width != parentWidth || Fu_Height !=parentHeight) {
+                int x = (int) (Fu_Width * fun.xPercentage / 100.0f);
+                int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
+                fun.setX(x);
+                fun.setY(y);
+                ViewGroup.LayoutParams params = fun.getLayoutParams();
+                params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
+                params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
+                fun.setLayoutParams(params);
+            }
+            Fu_Width = parentWidth;
+            Fu_Height = parentHeight;
+        };
+        // 添加监听器
+        parentView.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
     }
     @Override
     protected void onDetachedFromWindow() {
@@ -154,7 +159,6 @@ public class Fun_Window extends RelativeLayout {
             int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
             fun.setX(x);
             fun.setY(y);
-            requestLayout();
         });
 
     }
@@ -176,8 +180,6 @@ public class Fun_Window extends RelativeLayout {
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawColor(Color.TRANSPARENT);
-        paint.setColor(Color.argb(ba,br,bg,bb));
-        canvas.drawRoundRect(new RectF(0,0,getWidth(), getHeight()), Fun.DpToPx(window_radius), Fun.DpToPx(window_radius), paint);
         if(Draw != null && Draw.isfunction()){
             Draw.call(LuaValue.userdataOf(canvas));
         }
@@ -214,52 +216,64 @@ public class Fun_Window extends RelativeLayout {
             case MotionEvent.ACTION_DOWN:
                 X = (int)event.getX();
                 Y = (int)event.getY();
-                if(Down != null && Down.isfunction()){
-                    Down.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
+                if(!window_close){
+                    if(Down != null && Down.isfunction()){
+                        Down.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
+                    }
                 }
+
                 if(event.getX() > Close_X && event.getX() < getWidth() && event.getY() > 0 && event.getY() < rectBottom){
                     close_a = 100;
+                    window_close = true;
                     invalidate();
+                }else{
+                    window_close=false;
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 X = (int)event.getX();
                 Y = (int)event.getY();
-                if(Up != null && Up.isfunction()){
-                    Up.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
-                }
-                if(close_a==100){
-                    if(Close != null && Close.isfunction()){
-                        Close.call();
-                    }else{
-                        close_a=255;
-                        invalidate();
+                if(!window_close){
+                    if(Up != null && Up.isfunction()){
+                        Up.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
                     }
                 }else{
-                    if(close_a!=255){
-                        close_a=255;
-                        invalidate();
+                    if(close_a==100){
+                        if(Close != null && Close.isfunction()){
+                            Close.call();
+                        }else{
+                            close_a=255;
+                            invalidate();
+                        }
+                    }else{
+                        if(close_a!=255){
+                            close_a=255;
+                            invalidate();
+                        }
                     }
+                    window_close = false;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
                 X = (int) event.getX();
                 Y = (int) event.getY();
-                if(Move != null && Move.isfunction()){
-                    Move.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
-                }
-                if(event.getX() < Close_X || event.getX() > getWidth() || event.getY() < 0 || event.getY() > rectBottom){
-                    if(close_a!=255){
-                        invalidate();
+                if(!window_close){
+                    if(Move != null && Move.isfunction()){
+                        Move.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
                     }
-                    close_a=255;
                 }else{
-                    if(close_a!=100){
-                        invalidate();
+                    if(event.getX() < Close_X || event.getX() > getWidth() || event.getY() < 0 || event.getY() > rectBottom){
+                        if(close_a!=255){
+                            invalidate();
+                        }
+                        close_a=255;
+                    }else{
+                        if(close_a!=100){
+                            invalidate();
+                        }
+                        close_a=100;
                     }
-                    close_a=100;
                 }
-
                 break;
         }
         return true;
