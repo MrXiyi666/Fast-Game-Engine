@@ -11,11 +11,12 @@ end;
 --======================================================
 function Scene_Title:Create()
     --这里如何在new初始化
+    self:Create_Window();
     self:Scene_Sprite();
     self:Create_Back();
     self:Create_Paint();
     self:Create_Button();
-    self:Create_Window();
+
 end;
 --======================================================
 function Scene_Title:Scene_Sprite()
@@ -38,14 +39,14 @@ end;
 function Scene_Title:Create_Button()
     self.open_game = Java:Button();
     self.open_game:setText("开始游戏");
-    self.open_game:setSize(60,10);
-    self.open_game:setXY(20,30);
+
     self.open_game:setColor(100, 255, 255, 0);
     self.open_game:setTextSize(10);
-    self.open_game.update = true;
+    self.open_game.update = false;
     self.open_game.Click = function()
         Java:Mess("点击了");
-        self.open_game:setXY(self.index,50);
+        --self.open_game:setXY(self.index, 30);
+        self.open_game:setSize(self.index, 30);
         self.index = self.index+10;
         if self.index > 60 then
             self.index=20;
@@ -58,37 +59,52 @@ function Scene_Title:Create_Button()
         self.open_game:setColor(100, 255, 255, 0);
     end;
     self.index = 20;
-
+    --self.window_base:addChild(self.open_game);
+    self.open_game:setSize(60, 30);
+    self.open_game:setXY(15, 30);
 end;
 --======================================================
 function Scene_Title:Create_Window()
     self.window_base = Java:Window();
-    self.window_base:setSize(70,50);
-    self.window_base:setXY(15,20);
-    self.window_base:setWindowTitle(false);
+    self.window_base:setSize(70, 30);
+    self.window_base:setXY(15,30);
+    self.window_base:setWindowTitle(true);
+    Java:addWindow(self.window_base);
     self.window_base.Close = function()
         Java:removeWindow(self.window_base);
     end;
-    self.window_base:addChild(self.open_game);
-    Java:addWindow(self.window_base);
+    self.window_base.Up = function()
+        Java:Mess("点击了");
+        self.window_base:setXY(self.index, 30);
+
+        self.index = self.index+10;
+        if self.index > 60 then
+            self.index=20;
+        end
+    end;
+    self.window_base2 = Java:Window();
+    self.window_base2:setSize(60, 30);
+    self.window_base2:setXY(15,30);
+    self.window_base2:setWindowTitle(true);
+    self.window_base:addChild(self.window_base2);
+    self.window_base2.Close = function()
+        self.window_base:removeChild(self.window_base2);
+
+    end;
+    self.window_base2.Up = function()
+        Java:Mess("点击了");
+        self.window_base2:setXY(self.index, 30);
+
+        self.index = self.index+10;
+        if self.index > 60 then
+            self.index=20;
+        end
+    end;
 end;
 --======================================================
 function Scene_Title:sprite_draw(c)
     local canvas = Java:Canvas(c);
     canvas:drawBitmap(self.back, 0,0, self.paint);
-end;
---======================================================
-function Scene_Title:open_draw(c)
-    local canvas = Java:Canvas(c);
-    --canvas:drawBitmap(self.back, 0,0, self.paint);
-    self.Paint:setTextAlign(1);
-    self.Paint:setTextSize(30);
-    self.Paint:setColor(255, 255, 255, 255);
-    canvas:drawText("开始游戏", self.open_game:getWidth()/2, self.Paint:getTextHeight("开始游戏"), self.paint);
-end;
---======================================================
-function Scene_Title:open_up(x, y)
-    Java:Mess("按下了OpenGame" .. x .. "  " .. y);
 end;
 --======================================================
 function Scene_Title:Start()
