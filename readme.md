@@ -5,7 +5,25 @@
 #
 fast.game.engine 是游戏引擎源代码 复制到自己的Android 工程内 java文件夹下
 #
-assets 创建main.lua初始文档
+assets 创建main.lua初始文档  
+#
+main.lua 创建
+```Lua
+function Create()
+    
+end
+function Start()
+    
+end
+
+function Stop()
+  
+end
+
+function Destroy()
+    
+end
+```
 #
 导入libs内的jar luaj-jse-3.0.2.jar
 #
@@ -13,8 +31,25 @@ MainActivity 写入如下代码  用于初始化游戏引擎
 ```Java
 @Override
 protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-Fun.Create(this);
+    super.onCreate(savedInstanceState);
+    Fun.Create(this);
+}
+@Override
+protected void onStart() {
+    super.onStart();
+    Fun.globals.get("Start").call();
+}
+
+@Override
+protected void onStop() {
+    super.onStop();
+    Fun.globals.get("Stop").call();
+}
+
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    Fun.globals.get("Destroy").call();
 }
 ```
 #
