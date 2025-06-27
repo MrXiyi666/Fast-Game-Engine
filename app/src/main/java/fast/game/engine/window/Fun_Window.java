@@ -34,7 +34,7 @@ public class Fun_Window extends RelativeLayout {
     public LuaValue Close=null, Click;
     public int close_a=255, close_r=255, close_g=255, close_b=255;
     public boolean window_title = true, window_close;
-    private Fun_Window fun;
+    private final Fun_Window fun;
     private int Fu_Width=0,Fu_Height=0;
     private ViewTreeObserver.OnGlobalLayoutListener layoutListener;
     private ViewGroup parentView;

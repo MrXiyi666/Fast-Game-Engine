@@ -66,30 +66,18 @@ function Scene_Title:Create_Window()
         Java:removeWindow(self.window_base);
     end;
     self.window_base.Up = function()
-        Java:Mess("点击了");
-        self.window_base:setXY(self.index, 30);
-
-        self.index = self.index+10;
-        if self.index > 60 then
-            self.index=20;
-        end
+        Java:Mess("window_base 点击了");
     end;
     self.window_base2 = Java:Window();
     self.window_base2:setSize(60, 30);
-    self.window_base2:setXY(60,80);
+    self.window_base2:setXY(10,80);
     self.window_base2:setWindowTitle(true);
     self.window_base:addChild(self.window_base2);
     self.window_base2.Close = function()
         self.window_base:removeChild(self.window_base2);
     end;
     self.window_base2.Up = function()
-        Java:Mess("点击了");
-        self.window_base2:setXY(self.index, 80);
-
-        self.index = self.index+10;
-        if self.index > 60 then
-            self.index=20;
-        end
+        Java:Mess("window_base2 点击了");
     end;
 end;
 --======================================================
