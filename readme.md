@@ -9,7 +9,7 @@ assets 创建main.lua初始文档
 #
 导入libs内的jar luaj-jse-3.0.2.jar
 #
-MainActivity 写入如下代码
+MainActivity 写入如下代码  用于初始化游戏引擎
 ```Java
 @Override
 protected void onCreate(Bundle savedInstanceState) {
@@ -17,8 +17,6 @@ super.onCreate(savedInstanceState);
 Fun.Create(this);
 }
 ```
-#
-用于初始化游戏引擎
 #
 添加一个窗口
 ```Lua
