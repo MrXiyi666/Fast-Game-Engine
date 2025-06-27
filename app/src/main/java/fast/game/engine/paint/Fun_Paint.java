@@ -18,23 +18,23 @@ public class Fun_Paint {
     }
 
     public void setTextSize(int size){
-        paint.setTextSize(Fun.dp2px(size));
+        paint.setTextSize(Fun.DpToPx(size));
     }
     public int getSize(){
-        return Fun.px2dp(paint.getTextSize());
+        return Fun.PxToDp(paint.getTextSize());
     }
 
     public int getTextHeight(String text){
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
-        int textHeight = bounds.height(); // 获取文本高度
+        int textHeight = bounds.height();
         return textHeight;
     }
 
     public int getTextWidth(String text){
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
-        int textWidth = bounds.width(); // 获取文本宽度
+        int textWidth = bounds.width();
         return textWidth;
     }
     public void setAntiAlias(boolean b){
@@ -55,16 +55,16 @@ public class Fun_Paint {
     public void setMaskFilter(int radius, int ordinal){
         switch(ordinal){
             case 0:
-                paint.setMaskFilter(new BlurMaskFilter(Fun.dp2px(radius), BlurMaskFilter.Blur.INNER));
+                paint.setMaskFilter(new BlurMaskFilter(Fun.DpToPx(radius), BlurMaskFilter.Blur.INNER));
                 break;
             case 1:
-                paint.setMaskFilter(new BlurMaskFilter(Fun.dp2px(radius), BlurMaskFilter.Blur.NORMAL));
+                paint.setMaskFilter(new BlurMaskFilter(Fun.DpToPx(radius), BlurMaskFilter.Blur.NORMAL));
                 break;
             case 2:
-                paint.setMaskFilter(new BlurMaskFilter(Fun.dp2px(radius), BlurMaskFilter.Blur.OUTER));
+                paint.setMaskFilter(new BlurMaskFilter(Fun.DpToPx(radius), BlurMaskFilter.Blur.OUTER));
                 break;
             case 3:
-                paint.setMaskFilter(new BlurMaskFilter(Fun.dp2px(radius), BlurMaskFilter.Blur.SOLID));
+                paint.setMaskFilter(new BlurMaskFilter(Fun.DpToPx(radius), BlurMaskFilter.Blur.SOLID));
                 break;
         }
 

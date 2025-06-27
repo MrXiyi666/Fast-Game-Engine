@@ -2,11 +2,18 @@ package fast.game.engine.fun;
 
 import android.graphics.Canvas;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import fast.game.engine.View.Fast_View;
 import fast.game.engine.bitmap.Fun_Bitmap;
 import fast.game.engine.control.Fun_Button;
 import fast.game.engine.paint.Fun_Paint;
+import fast.game.engine.window.Fun_Window;
 
 public class JavaToLua {
 
@@ -26,14 +33,6 @@ public class JavaToLua {
     public void drawRGB(Canvas canvas, int r, int g, int b){
         canvas.drawRGB(r,g,b);
     }
-    public void addChild(Fast_View view){
-        Fun.layout.addView(view);
-    }
-
-    public void addChild(Fun_Button view){
-        Fun.layout.addView(view);
-    }
-
     public Fast_View Sprite(){
         return new Fast_View(Fun.context);
     }
@@ -41,11 +40,28 @@ public class JavaToLua {
     public Fun_Button Button(){
         return new Fun_Button(Fun.context);
     }
+
+    public Fun_Window Window(){
+        return new Fun_Window(Fun.context);
+    }
     public Fun_Bitmap Bitmap(){
         return new Fun_Bitmap();
     }
 
     public Fun_Paint Paint(){
         return new Fun_Paint();
+    }
+    public void addWindow(Fun_Window window){
+        Fun.activity.setContentView(window);
+    }
+
+    public void removeWindow(Fun_Window window){
+        ViewGroup rootView = Fun.activity.findViewById(android.R.id.content);
+        rootView.removeView(window);
+    }
+
+    public void removeWindowAll(){
+        ViewGroup rootView = Fun.activity.findViewById(android.R.id.content);
+        rootView.removeAllViews();
     }
 }

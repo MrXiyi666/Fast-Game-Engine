@@ -2,18 +2,16 @@ package fast.game.engine.fun;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.WindowManager;
 
 import org.luaj.vm2.Globals;
-
-import fast.game.engine.layout.Layout;
 
 public class Fun {
     public static Context context;
     public static Activity activity;
     public static int width, height;
 
-    public static Layout layout;
     public static Globals globals;
 
     public static void Create(Activity c){
@@ -21,16 +19,18 @@ public class Fun {
         context=c;
         width = context.getResources().getDisplayMetrics().widthPixels;
         height = context.getResources().getDisplayMetrics().heightPixels;
-        layout = new Layout(context);
+        activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        View decorView = activity.getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         LuaJInit.Init();
     }
 
-    public static int px2dp(float pxValue) {
+    public static int PxToDp(float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
 
-    public static int dp2px(float dpValue) {
+    public static int DpToPx(float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }
