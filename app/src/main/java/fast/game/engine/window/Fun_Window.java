@@ -52,13 +52,6 @@ public class Fun_Window extends RelativeLayout {
         background.setCornerRadius(Fun.DpToPx(window_radius));
         this.setBackground(background);
         this.setClipToOutline(true);
-        this.setOnClickListener(view -> {
-            if(!window_close){
-                if(Click != null && Click.isfunction()){
-                    Click.call();
-                }
-            }
-        });
     }
     public void addChild(Fast_View view){
         this.addView(view);
@@ -169,12 +162,29 @@ public class Fun_Window extends RelativeLayout {
     public void hide(){
         this.setVisibility(View.GONE);
     }
-    public void setWindowTitle(boolean b){
+    public void openWindowTitle(boolean b){
         window_title = b;
-        invalidate();
         if(!b){
             setPadding(0, 0, 0, 0);
         }
+        invalidate();
+    }
+    public void openClick(){
+        this.setSoundEffectsEnabled(true);
+        this.setOnClickListener(view -> {
+            if(!window_close){
+                if(Click != null && Click.isfunction()){
+                    Click.call();
+                }
+            }
+        });
+    }
+    public void closeClick(){
+        Click=null;
+        this.setSoundEffectsEnabled(false);
+        this.setOnClickListener(view -> {
+
+        });
     }
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
@@ -217,9 +227,12 @@ public class Fun_Window extends RelativeLayout {
                 X = (int)event.getX();
                 Y = (int)event.getY();
                 if(!window_close){
-                    if(Down != null && Down.isfunction()){
-                        Down.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
+                    if(Y > rectBottom){
+                        if(Down != null && Down.isfunction()){
+                            Down.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
+                        }
                     }
+
                 }
 
                 if(event.getX() > Close_X && event.getX() < getWidth() && event.getY() > 0 && event.getY() < rectBottom){
@@ -234,8 +247,10 @@ public class Fun_Window extends RelativeLayout {
                 X = (int)event.getX();
                 Y = (int)event.getY();
                 if(!window_close){
-                    if(Up != null && Up.isfunction()){
-                        Up.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
+                    if(Y > rectBottom){
+                        if(Up != null && Up.isfunction()){
+                            Up.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
+                        }
                     }
                 }else{
                     if(close_a==100){
@@ -258,8 +273,10 @@ public class Fun_Window extends RelativeLayout {
                 X = (int) event.getX();
                 Y = (int) event.getY();
                 if(!window_close){
-                    if(Move != null && Move.isfunction()){
-                        Move.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
+                    if(Y > rectBottom){
+                        if(Move != null && Move.isfunction()){
+                            Move.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
+                        }
                     }
                 }else{
                     if(event.getX() < Close_X || event.getX() > getWidth() || event.getY() < 0 || event.getY() > rectBottom){
