@@ -4,8 +4,6 @@ Java:addLua("", "Scene_Title.lua");
 
 function Create()
     scene = Scene_Title:new();
-    scene.sprite:setSize(100, 100);
-    scene.sprite:setXY(0, 0);
 end
 
 function Start()

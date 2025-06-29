@@ -1,67 +1,111 @@
 package fast.game.engine.View;
+
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.view.MotionEvent;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import androidx.annotation.NonNull;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+
 import org.luaj.vm2.LuaValue;
 
-public class Fast_View extends View {
+import java.util.ArrayList;
+import java.util.List;
+
+import fast.game.engine.adapter.Fun_Adapter_Layout_Text;
+import fast.game.engine.fun.Fun;
+
+public class List_Text extends ListView {
     private int widthPercentage = 0;
     private int heightPercentage = 0;
     private int xPercentage=0, yPercentage=0;
-    public boolean update = false;
-    public LuaValue Down=null;
-    public LuaValue Up=null;
-    public LuaValue Move=null;
-    public LuaValue Draw=null;
     private int Fu_Width=0,Fu_Height=0;
-    private Fast_View fun;
+    private final List_Text fun;
     private ViewTreeObserver.OnGlobalLayoutListener layoutListener;
     private ViewGroup parentView;
-    public Fast_View(Context context) {
+
+    private final List<String> dataList = new ArrayList<>();
+    private final Fun_Adapter_Layout_Text adapter;
+    public LuaValue Close=null, Click=null;
+    public int window_radius=20;
+    public int ba=150, br=255, bg=255, bb=255;
+    public List_Text(Context context) {
         super(context);
-        fun = this;
-        ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
+        fun=this;
+        // 设置初始布局参数
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
         );
+        this.setVerticalScrollBarEnabled(false);
+        this.setHorizontalScrollBarEnabled(false);
         this.setLayoutParams(params);
         this.setId(View.generateViewId());
+        this.setDividerHeight(Fun.DpToPx(1));
+        adapter = new Fun_Adapter_Layout_Text(context, dataList);
+        this.setAdapter(adapter);
+        this.setOnItemClickListener((parent, view, position, id) -> {
+            if(Click != null && Click.isfunction()){
+                Click.call(LuaValue.valueOf(position), LuaValue.valueOf(dataList.get(position)));
+            }
+        });
+        // 创建带圆角的背景
+        GradientDrawable background = new GradientDrawable();
+        background.setCornerRadius(Fun.DpToPx(window_radius));
+        background.setColor(Color.argb(ba,br,bg,bb));
+        this.setBackground(background);
+        this.setClipToOutline(true);
         this.setVisibility(View.INVISIBLE);
-        postDelayed(()->{
-            setVisibility(View.VISIBLE);
-        },10);
+        postDelayed(()-> setVisibility(View.VISIBLE),10);
     }
-    public int getTextHeight(String text){
-        Paint paint = new Paint();
-        Rect bounds = new Rect();
-        paint.getTextBounds(text, 0, text.length(), bounds);
-        // 获取文本高度
-        return bounds.height();
+    public void setColor(int a, int r, int g, int b){
+        // 创建带圆角的背景
+        GradientDrawable background = new GradientDrawable();
+        background.setCornerRadius(Fun.DpToPx(window_radius));
+        background.setColor(Color.argb(a, r, g, b));
+        this.setBackground(background);
     }
-    public int getTextWidth(String text){
-        Paint paint = new Paint();
-        Rect bounds = new Rect();
-        paint.getTextBounds(text, 0, text.length(), bounds);
-        return bounds.width();
+    public void setHeight_Tage(int data){
+        adapter.setHeight_Tage(data);
+        adapter.notifyDataSetChanged();
     }
+    // 添加元素
+    public void addItem(String item) {
+        dataList.add(item);
+        adapter.notifyDataSetChanged();
+    }
+
+    // 删除元素
+    public void removeItem(int position) {
+        if (position >= 0 && position < dataList.size()) {
+            dataList.remove(position);
+            adapter.notifyDataSetChanged();
+        }
+    }
+    public void clearItems() {
+        dataList.clear();
+        adapter.notifyDataSetChanged();
+    }
+    public int getItemCount() {
+        return dataList.size();
+    }
+
     public void setSize(int widthPercentage, int heightPercentage) {
         this.widthPercentage = widthPercentage;
         this.heightPercentage = heightPercentage;
         post(()->{
-            ViewGroup.LayoutParams params = getLayoutParams();
+            ViewGroup.LayoutParams params = fun.getLayoutParams();
             params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
             params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
             fun.setLayoutParams(params);
         });
 
     }
+
     public void setXY(int xPercentage, int yPercentage) {
         this.xPercentage = xPercentage;
         this.yPercentage = yPercentage;
@@ -71,8 +115,8 @@ public class Fast_View extends View {
             fun.setX(x);
             fun.setY(y);
         });
-
     }
+
     public void show(){
         this.setVisibility(View.VISIBLE);
     }
@@ -96,7 +140,7 @@ public class Fast_View extends View {
                 int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
                 fun.setX(x);
                 fun.setY(y);
-                ViewGroup.LayoutParams params = getLayoutParams();
+                ViewGroup.LayoutParams params = fun.getLayoutParams();
                 params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
                 params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
                 fun.setLayoutParams(params);
@@ -115,46 +159,5 @@ public class Fast_View extends View {
             parentView.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
         }
     }
-    @Override
-    protected void onDraw(@NonNull Canvas canvas) {
-        super.onDraw(canvas);
-        canvas.drawColor(Color.TRANSPARENT);
-        if(Draw != null && Draw.isfunction()){
-            Draw.call(LuaValue.userdataOf(canvas));
-        }
-        if(update){
-            invalidate();
-        }
-    }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        super.onTouchEvent(event);
-        int X, Y;
-        switch(event.getAction()){
-            case MotionEvent.ACTION_DOWN:
-                X = (int)event.getX();
-                Y = (int)event.getY();
-                if(Down != null && Down.isfunction()){
-                    Down.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-                X = (int)event.getX();
-                Y = (int)event.getY();
-                if(Up != null && Up.isfunction()){
-                    Up.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
-                }
-                break;
-            case MotionEvent.ACTION_MOVE:
-                X = (int) event.getX();
-                Y = (int) event.getY();
-                if(Move != null && Move.isfunction()){
-                    Move.call(LuaValue.valueOf(X), LuaValue.valueOf(Y));
-                }
-                break;
-            default:
-        }
-        return true;
-    }
 }

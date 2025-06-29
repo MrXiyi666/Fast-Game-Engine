@@ -6,23 +6,30 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.luaj.vm2.LuaValue;
 import fast.game.engine.View.Fast_View;
-import fast.game.engine.control.Fun_Button;
+import fast.game.engine.View.Fun_Button;
+import fast.game.engine.View.Fun_ImageView;
+import fast.game.engine.View.Fun_List;
+import fast.game.engine.View.Fun_Text;
+import fast.game.engine.View.List_Text;
 import fast.game.engine.fun.Fun;
 
 public class Fun_Window extends RelativeLayout {
     public Paint paint;
     public int window_radius=20;
-    private int widthPercentage = 0;
-    private int heightPercentage = 0;
-    private int xPercentage=0, yPercentage=0;
+    public int widthPercentage = 0;
+    public int heightPercentage = 0;
+    public int xPercentage=0, yPercentage=0;
     public boolean update = false;
     public LuaValue Down=null;
     public LuaValue Up=null;
@@ -34,15 +41,17 @@ public class Fun_Window extends RelativeLayout {
     public LuaValue Close=null, Click;
     public int close_a=255, close_r=255, close_g=255, close_b=255;
     public boolean window_title = true, window_close;
-    private final Fun_Window fun;
-    private int Fu_Width=0,Fu_Height=0;
-    private ViewTreeObserver.OnGlobalLayoutListener layoutListener;
-    private ViewGroup parentView;
-    public Fun_Window(Context context) {
-        super(context);
+    public Fun_Window fun;
+    public int Fu_Width=0,Fu_Height=0;
+    public ViewTreeObserver.OnGlobalLayoutListener layoutListener;
+    public ViewGroup parentView;
+    private void init(Context context){
         fun = this;
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        this.setLayoutParams(layoutParams);
+        ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+        );
+        this.setLayoutParams(params);
         this.setId(View.generateViewId());
         paint = new Paint();
         paint.setAntiAlias(true);
@@ -52,35 +61,69 @@ public class Fun_Window extends RelativeLayout {
         background.setCornerRadius(Fun.DpToPx(window_radius));
         this.setBackground(background);
         this.setClipToOutline(true);
+        this.setVisibility(View.INVISIBLE);
+        postDelayed(()-> setVisibility(View.VISIBLE),10);
     }
+    public Fun_Window(Context context) {
+        super(context);
+        init(context);
+    }
+
+    public Fun_Window(Context context, @Nullable AttributeSet attrs){
+        super(context, attrs);
+        init(context);
+    }
+    public Fun_Window(Context context, @Nullable AttributeSet attrs, int defStyleAttr){
+        super(context, attrs, defStyleAttr);
+        init(context);
+    }
+
     public void addChild(Fast_View view){
-        this.addView(view);
+        post(()-> this.addView(view));
     }
     public void removeChild(Fast_View view){
         this.removeView(view);
     }
-
-    public void addChild(Fun_Button view){
-        post(()->{
-            this.addView(view);
-        });
-
+    public void addChild(Fun_ImageView view){
+        post(()-> this.addView(view));
     }
-
-
+    public void removeChild(Fun_ImageView view){
+        this.removeView(view);
+    }
+    public void addChild(Fun_Button view){
+        post(()-> this.addView(view));
+    }
     public void removeChild(Fun_Button view){
-        post(()->{
-            this.removeView(view);
-        });
-
+        this.removeView(view);
     }
     public void addChild(Fun_Window view){
-        post(()->{
-            this.addView(view);
-        });
-
+        post(()-> this.addView(view));
     }
     public void removeChild(Fun_Window view){
+        this.removeView(view);
+    }
+    public void addChild(Fun_Text view){
+        post(()-> this.addView(view));
+    }
+    public void removeChild(Fun_Text view){
+        this.removeView(view);
+    }
+    public void addChild(List_Text view){
+        post(()-> this.addView(view));
+    }
+    public void removeChild(List_Text view){
+        this.removeView(view);
+    }
+    public void addChild(Fun_List view){
+        post(()-> this.addView(view));
+    }
+    public void removeChild(Fun_List view){
+        this.removeView(view);
+    }
+    public void addChild(Fun_Scroll_Window_Text view){
+        post(()-> this.addView(view));
+    }
+    public void removeChild(Fun_Scroll_Window_Text view){
         this.removeView(view);
     }
     public void removeChildAll(){
@@ -114,7 +157,7 @@ public class Fun_Window extends RelativeLayout {
                 int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
                 fun.setX(x);
                 fun.setY(y);
-                ViewGroup.LayoutParams params = fun.getLayoutParams();
+                ViewGroup.LayoutParams params =  getLayoutParams();
                 params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
                 params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
                 fun.setLayoutParams(params);
@@ -137,12 +180,11 @@ public class Fun_Window extends RelativeLayout {
         this.widthPercentage = widthPercentage;
         this.heightPercentage = heightPercentage;
         post(()->{
-            ViewGroup.LayoutParams params = fun.getLayoutParams();
+            ViewGroup.LayoutParams params = getLayoutParams();
             params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
             params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
             fun.setLayoutParams(params);
         });
-
     }
     public void setXY(int xPercentage, int yPercentage) {
         this.xPercentage = xPercentage;

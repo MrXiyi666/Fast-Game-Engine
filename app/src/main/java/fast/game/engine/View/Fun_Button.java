@@ -1,4 +1,4 @@
-package fast.game.engine.control;
+package fast.game.engine.View;
 
 
 import android.content.Context;
@@ -28,6 +28,12 @@ public class Fun_Button extends AppCompatButton {
     public Fun_Button(Context context) {
         super(context);
         fun = this;
+        ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+        );
+        this.setLayoutParams(params);
+        // 设置初始布局参数
         this.setId(View.generateViewId());
         this.setTextColor(Color.WHITE);
         this.setBackgroundColor(Color.TRANSPARENT);
@@ -42,13 +48,17 @@ public class Fun_Button extends AppCompatButton {
         background.setColor(Color.argb(ba,br,bg,bb));
         this.setBackground(background);
         this.setClipToOutline(true);
-
+        this.setVisibility(View.INVISIBLE);
+        postDelayed(()->{
+            setVisibility(View.VISIBLE);
+        },10);
     }
 
     @Override
     public void setTextSize(float size) {
         super.setTextSize(Fun.DpToPx(size));
         invalidate();
+
     }
     public void setColor(int a, int r, int g, int b){
         ba=a;br=r;bg=g;bb=b;
@@ -79,7 +89,7 @@ public class Fun_Button extends AppCompatButton {
                 int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
                 fun.setX(x);
                 fun.setY(y);
-                ViewGroup.LayoutParams params = fun.getLayoutParams();
+                ViewGroup.LayoutParams params =  getLayoutParams();
                 params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
                 params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
                 fun.setLayoutParams(params);
@@ -103,7 +113,7 @@ public class Fun_Button extends AppCompatButton {
         this.widthPercentage = widthPercentage;
         this.heightPercentage = heightPercentage;
         post(()->{
-            ViewGroup.LayoutParams params = fun.getLayoutParams();
+            ViewGroup.LayoutParams params =  getLayoutParams();
             params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
             params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
             fun.setLayoutParams(params);
