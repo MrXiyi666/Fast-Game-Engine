@@ -26,7 +26,6 @@ public class Fun_Text extends AppCompatTextView {
         fun = this;
         this.setId(View.generateViewId());
         MText = new AppCompatTextView(context);
-        MInit();
         this.setBackgroundColor(Color.TRANSPARENT);
         this.setVisibility(View.INVISIBLE);
         postDelayed(()->{
@@ -170,15 +169,14 @@ public class Fun_Text extends AppCompatTextView {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        MInit();
         MText.draw(canvas);
         super.onDraw(canvas);
     }
     public void setStrokeWidth(int data){
-        MText.getPaint().setStrokeWidth(Fun.DpToPx(data));
+        strokeWidth = data;
         invalidate();
     }
-
-
     @Override
     public void setLetterSpacing(float letterSpacing) {
         super.setLetterSpacing(letterSpacing);

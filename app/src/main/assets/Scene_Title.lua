@@ -47,9 +47,9 @@ function Scene_Title:Create_Text()
     self.game_name:setColor(0, 0, 0, 0);
     self.game_name:setTextSize(10);
     self.game_name:setTextColor(255, 0, 100, 0);
-    self.game_name:setStrokeWidth(6);
+    self.game_name:setStrokeWidth(3);
     self.game_name:setLetterSpacing(1);
-    --self.scroll:addChild(self.game_name);
+    self.window_base:addChild(self.game_name);
 end
 --======================================================
 function Scene_Title:Create_ListText()
