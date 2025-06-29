@@ -1,18 +1,14 @@
 package fast.game.engine.adapter;
 
 import android.content.Context;
-import android.util.Log;
+import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.core.widget.TextViewCompat;
-
 import java.util.List;
 
 import fast.game.engine.fun.Fun;
@@ -21,6 +17,7 @@ public class Fun_Adapter_Layout_Text extends BaseAdapter {
     private List<String> dataList;
     private Context context;
     private int height_tage = 10;
+    public int ta = 255, tr = 255, tg = 255, tb = 255;
     public Fun_Adapter_Layout_Text(Context context, List<String> dataList){
         this.context=context;
         this.dataList=dataList;
@@ -53,11 +50,13 @@ public class Fun_Adapter_Layout_Text extends BaseAdapter {
             holder.textView.setAutoSizeTextTypeUniformWithConfiguration(5,100,1, TypedValue.COMPLEX_UNIT_SP);
             holder.textView.setIncludeFontPadding(false);
             convertView = getLayout(holder.textView);
+            convertView.setBackgroundColor(Color.TRANSPARENT);
             convertView.setVisibility(View.INVISIBLE);
             convertView.setTag(holder);
         }else {
             holder = (ViewHolder)convertView.getTag();
         }
+        holder.textView.setTextColor(Color.argb(ta, tr, tg, tb));
         holder.textView.setText(dataList.get(position));
         View finalConvertView = convertView;
         convertView.post(()->{
@@ -72,10 +71,14 @@ public class Fun_Adapter_Layout_Text extends BaseAdapter {
             if(height_tage < 10){
                 height_tage=10;
             }
-            params.height = (int) (parentView.getHeight() * height_tage / 100.0f);
-            finalConvertView.setLayoutParams(params);
-            finalConvertView.setVisibility(View.VISIBLE);
-            Log.w("高度",params.height +"");
+            int new_height = (int) (parentView.getHeight() * height_tage / 100.0f);
+            if(params.height != new_height){
+                params.height = new_height;
+                finalConvertView.setLayoutParams(params);
+            }
+            if(finalConvertView.getVisibility() == View.INVISIBLE){
+                finalConvertView.setVisibility(View.VISIBLE);
+            }
         });
         return convertView;
     }

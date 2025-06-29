@@ -30,7 +30,7 @@ function Scene_Title:Scene_Sprite()
         local canvas = Java:Canvas(c);
         canvas:drawBitmap(self.back, 0, 0, self.paint);
     end;
-    --self.scroll:addChild(self.sprite);
+    self.window_base:addChild(self.sprite);
 end;
 --======================================================
 function Scene_Title:Create_Back()
@@ -56,6 +56,7 @@ function Scene_Title:Create_ListText()
     self.list_text = Java:ListText();
     self.list_text:setSize(30, 20);
     self.list_text:setXY(5, 20);
+    self.list_text:setHeight_Tage(20);
     self.size = 10;
     self.list_text.Click=function(position, name)
         if self.size < 50 then
@@ -80,8 +81,11 @@ end
 --======================================================
 function Scene_Title:Create_List()
     self.list = Java:List();
-    self.list:setSize(30, 20);
-    self.list:setXY(40, 20);
+    self.list:setSize(60, 50);
+    self.list:setXY(20, 20);
+    self.list:setHeight_Tage(10);
+   -- self.list:setColor(50,0,0,0);
+    --self.list:setTextColor(255,255,255,255);
     self.list.Click=function(position, name)
         if self.size < 50 then
             self.size = self.size + 10;
@@ -90,28 +94,15 @@ function Scene_Title:Create_List()
         end
         self.list:setHeight_Tage(self.size);
     end;
-    self.list_1 = Java:List_Horizontal_Data("img/title/shamozun.png", "杀魔尊");
-    self.list_2 = Java:List_Horizontal_Data("img/title/shamozun.png", "杀魔尊2");
-    self.list_3 = Java:List_Horizontal_Data("img/title/shamozun.png", "杀魔尊3");
-    self.list_4 = Java:List_Horizontal_Data("img/title/shamozun.png", "杀魔尊4");
-    self.list_5 = Java:List_Horizontal_Data("img/title/shamozun.png", "杀魔尊5");
-    self.list_6 = Java:List_Horizontal_Data("img/title/shamozun.png", "杀魔尊6");
-    self.list_7 = Java:List_Horizontal_Data("img/title/shamozun.png", "杀魔尊7");
-    self.list_8 = Java:List_Horizontal_Data("img/title/shamozun.png", "杀魔尊8");
-    self.list_9 = Java:List_Horizontal_Data("img/title/shamozun.png", "杀魔尊9");
-    self.list_10 = Java:List_Horizontal_Data("img/title/shamozun.png", "杀魔尊10");
-    self.list:addItem(self.list_1);
-    self.list:addItem(self.list_2);
-    self.list:addItem(self.list_3);
-    self.list:addItem(self.list_4);
-    self.list:addItem(self.list_5);
-    self.list:addItem(self.list_6);
-    self.list:addItem(self.list_7);
-    self.list:addItem(self.list_8);
-    self.list:addItem(self.list_9);
-    self.list:addItem(self.list_10);
+    self.lists={};
+    for i=1, 20 do
+        self.lists[i] = Java:List_Horizontal_Data("img/title/shamozun.png", "杀魔尊"..i);
+    end
+    for i, list in ipairs(self.lists) do
+        self.list:addItem(list);
+    end
     self.window_base:addChild(self.list);
-end
+    end
 --======================================================
 function Scene_Title:Create_Scroll_Text()
     self.scroll_text = Java:Scroll_Window_Text();
@@ -191,4 +182,6 @@ end;
 --======================================================
 function Scene_Title:Destroy()
     self.Bitmap:Release(self.back);
+    self.list:Destroy();
+    self.list_text:Destroy();
 end;

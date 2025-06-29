@@ -1,17 +1,11 @@
 package fast.game.engine.data;
 
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-
 import fast.game.engine.fun.Fun;
 
 public class Fun_List_Horizontal_Data {
     Bitmap bitmap=null;
-    String name="物品";
+    String name="";
 
     public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;

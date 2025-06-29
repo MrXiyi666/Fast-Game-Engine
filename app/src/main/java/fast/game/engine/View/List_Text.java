@@ -29,10 +29,10 @@ public class List_Text extends ListView {
     private ViewGroup parentView;
 
     private final List<String> dataList = new ArrayList<>();
-    private final Fun_Adapter_Layout_Text adapter;
+    private Fun_Adapter_Layout_Text adapter;
     public LuaValue Close=null, Click=null;
     public int window_radius=20;
-    public int ba=150, br=255, bg=255, bb=255;
+    public int ba=50, br=0, bg=0, bb=0;
     public List_Text(Context context) {
         super(context);
         fun=this;
@@ -69,6 +69,13 @@ public class List_Text extends ListView {
         background.setColor(Color.argb(a, r, g, b));
         this.setBackground(background);
     }
+    public void setTextColor(int a, int r, int g, int b){
+        adapter.ta=a;
+        adapter.tr=r;
+        adapter.tg=g;
+        adapter.tb=b;
+        adapter.notifyDataSetChanged();
+    }
     public void setHeight_Tage(int data){
         adapter.setHeight_Tage(data);
         adapter.notifyDataSetChanged();
@@ -78,7 +85,13 @@ public class List_Text extends ListView {
         dataList.add(item);
         adapter.notifyDataSetChanged();
     }
-
+    public void reviseItem(String item){
+        for(int i=0;i<dataList.size();i++){
+            if(item.equals(dataList.get(i))){
+                dataList.set(i, item);
+            }
+        }
+    }
     // 删除元素
     public void removeItem(int position) {
         if (position >= 0 && position < dataList.size()) {
@@ -93,7 +106,9 @@ public class List_Text extends ListView {
     public int getItemCount() {
         return dataList.size();
     }
-
+    public void update(){
+        adapter.notifyDataSetChanged();
+    }
     public void setSize(int widthPercentage, int heightPercentage) {
         this.widthPercentage = widthPercentage;
         this.heightPercentage = heightPercentage;
@@ -157,6 +172,12 @@ public class List_Text extends ListView {
         // 移除监听器
         if (parentView != null && parentView.getViewTreeObserver().isAlive()) {
             parentView.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
+        }
+    }
+    public void Destroy(){
+        if (adapter != null) {
+            this.setAdapter(null);
+            adapter=null;
         }
     }
 

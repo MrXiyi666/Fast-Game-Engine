@@ -26,7 +26,7 @@ public class Fun_List extends ListView {
     private ViewGroup parentView;
     private int Fu_Width=0,Fu_Height=0;
     public int window_radius=20;
-    public int ba=150, br=255, bg=255, bb=255;
+    public int ba=150, br=0, bg=0, bb=0;
     public Fun_Adapter_Layout_Horizontal adapter;
     public LuaValue Close=null, Click=null;
     private final List<Fun_List_Horizontal_Data> dataList = new ArrayList<>();
@@ -44,7 +44,6 @@ public class Fun_List extends ListView {
         this.setHorizontalScrollBarEnabled(false);
         adapter = new Fun_Adapter_Layout_Horizontal(context, dataList);
         this.setAdapter(adapter);
-        // 创建带圆角的背景
         GradientDrawable background = new GradientDrawable();
         background.setCornerRadius(Fun.DpToPx(window_radius));
         background.setColor(Color.argb(ba,br,bg,bb));
@@ -79,6 +78,23 @@ public class Fun_List extends ListView {
                 adapter.notifyDataSetChanged();
             }
         }
+    }
+    public void update(){
+        adapter.notifyDataSetChanged();
+    }
+    public void setColor(int a, int r, int g, int b){
+        ba =a;br=r;bg=g;bb=b;
+        GradientDrawable background = new GradientDrawable();
+        background.setCornerRadius(Fun.DpToPx(window_radius));
+        background.setColor(Color.argb(ba,br,bg,bb));
+        this.setBackground(background);
+    }
+    public void setTextColor(int a, int r, int g, int b){
+        adapter.ta=a;
+        adapter.tr=r;
+        adapter.tg=g;
+        adapter.tb=b;
+        adapter.notifyDataSetChanged();
     }
     public void clearItems() {
         dataList.clear();
@@ -141,5 +157,12 @@ public class Fun_List extends ListView {
             fun.setY(y);
         });
 
+    }
+
+    public void Destroy(){
+        if (adapter != null) {
+            this.setAdapter(null);
+            adapter=null;
+        }
     }
 }
