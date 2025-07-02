@@ -9,14 +9,19 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.core.widget.TextViewCompat;
+
 import java.util.List;
 
+import fast.game.engine.View.Fun_Text;
 import fast.game.engine.fun.Fun;
+import fast.game.engine.layout.Fun_LinearLayout;
 
 public class Fun_Adapter_Layout_Text extends BaseAdapter {
     private List<String> dataList;
     private Context context;
-    private int height_tage = 10;
+    private int Height_Tage=10;
     public int ta = 255, tr = 255, tg = 255, tb = 255;
     public Fun_Adapter_Layout_Text(Context context, List<String> dataList){
         this.context=context;
@@ -36,67 +41,42 @@ public class Fun_Adapter_Layout_Text extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
-
+    public void setHeight_Tage(int data){
+        Height_Tage = data;
+    }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
             holder.textView = new TextView(context);
-            holder.textView.setGravity(Gravity.CENTER);
             holder.textView.setText("物品");
-
+            holder.textView.setBackgroundColor(Color.TRANSPARENT);
+            holder.textView.setGravity(Gravity.CENTER);
+            holder.textView.setPadding(Fun.DpToPx(5),Fun.DpToPx(5),Fun.DpToPx(5),Fun.DpToPx(5));
             holder.textView.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-            holder.textView.setAutoSizeTextTypeUniformWithConfiguration(5,100,1, TypedValue.COMPLEX_UNIT_SP);
-            holder.textView.setIncludeFontPadding(false);
-            convertView = getLayout(holder.textView);
+            holder.textView.setAutoSizeTextTypeUniformWithConfiguration(5, 100, 1, TypedValue.COMPLEX_UNIT_SP);
+            convertView = holder.textView;
             convertView.setBackgroundColor(Color.TRANSPARENT);
-            convertView.setVisibility(View.INVISIBLE);
+            convertView.setVisibility(View.VISIBLE);
             convertView.setTag(holder);
         }else {
             holder = (ViewHolder)convertView.getTag();
         }
         holder.textView.setTextColor(Color.argb(ta, tr, tg, tb));
         holder.textView.setText(dataList.get(position));
-        View finalConvertView = convertView;
-        convertView.post(()->{
-            ViewGroup parentView =  (ViewGroup) finalConvertView.getParent();
-            if(parentView==null){
-                return;
-            }
-            if(parentView.getHeight()<=0){
-                return;
-            }
-            ViewGroup.LayoutParams params = finalConvertView.getLayoutParams();
-            if(height_tage < 10){
-                height_tage=10;
-            }
-            int new_height = (int) (parentView.getHeight() * height_tage / 100.0f);
-            if(params.height != new_height){
-                params.height = new_height;
-                finalConvertView.setLayoutParams(params);
-            }
-            if(finalConvertView.getVisibility() == View.INVISIBLE){
-                finalConvertView.setVisibility(View.VISIBLE);
-            }
-        });
         return convertView;
-    }
-    public void setHeight_Tage(int data){
-        height_tage = data;
     }
     static class ViewHolder {
         TextView textView;
     }
-    private View getLayout(TextView textView){
-        LinearLayout linearLayout = new LinearLayout(context);
+    private View getLayout(Fun_Text textView){
+        Fun_LinearLayout linearLayout = new Fun_LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        linearLayout.setLayoutParams(params);
-        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        textParams.gravity = Gravity.CENTER_VERTICAL;
+        linearLayout.setSize(100,20);
+
         textView.setPadding(Fun.DpToPx(5),Fun.DpToPx(5),Fun.DpToPx(5),Fun.DpToPx(5));
-        linearLayout.addView(textView, textParams);
+        linearLayout.addView(textView);
         return linearLayout;
     }
 }

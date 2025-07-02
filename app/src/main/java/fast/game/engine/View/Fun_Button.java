@@ -1,40 +1,30 @@
 package fast.game.engine.View;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.widget.TextViewCompat;
 import org.luaj.vm2.LuaValue;
 import fast.game.engine.fun.Fun;
 
+
 public class Fun_Button extends AppCompatButton {
-    private int widthPercentage = 0;
-    private int heightPercentage = 0;
-    private int xPercentage=0, yPercentage=0;
     public boolean update = false;
-    private Fun_Button fun;
-    private ViewGroup parentView;
-    private int Fu_Width=0,Fu_Height=0;
     public int ba=150, br=0, bg=0, bb=0;
     public int window_radius=20;
-    private ViewTreeObserver.OnGlobalLayoutListener layoutListener;
     public LuaValue Click=null, Down=null, Up=null, Move=null;
     public Fun_Button(Context context) {
         super(context);
-        fun = this;
-        ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-        );
-        this.setLayoutParams(params);
-        // 设置初始布局参数
-        this.setId(View.generateViewId());
         this.setTextColor(Color.WHITE);
         this.setBackgroundColor(Color.TRANSPARENT);
         this.setOnClickListener(view -> {
@@ -52,13 +42,27 @@ public class Fun_Button extends AppCompatButton {
         postDelayed(()->{
             setVisibility(View.VISIBLE);
         },10);
+
     }
 
     @Override
     public void setTextSize(float size) {
         super.setTextSize(Fun.DpToPx(size));
         invalidate();
-
+    }
+    @SuppressLint("RestrictedApi")
+    public void openAutoSize(){
+        setAutoSizeTextTypeWithDefaults(TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+        setAutoSizeTextTypeUniformWithConfiguration(5,100,1, TypedValue.COMPLEX_UNIT_SP);
+    }
+    @SuppressLint("RestrictedApi")
+    public void openAutoSize(int min, int max){
+        setAutoSizeTextTypeWithDefaults(TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+        setAutoSizeTextTypeUniformWithConfiguration(min,max,1, TypedValue.COMPLEX_UNIT_SP);
+    }
+    @SuppressLint("RestrictedApi")
+    public void closeAutoSize() {
+        setAutoSizeTextTypeWithDefaults(TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
     }
     public void setColor(int a, int r, int g, int b){
         ba=a;br=r;bg=g;bb=b;
@@ -73,63 +77,50 @@ public class Fun_Button extends AppCompatButton {
         this.setTextColor(Color.argb(a,r,g,b));
         invalidate();
     }
+
+    public int fu_width=0,fu_height=0;
+    private ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener;
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        // 获取父布局
-        parentView =  (ViewGroup)getParent();
-        if (parentView == null) {
-            return;
-        }
-        layoutListener = () -> {
-            int parentWidth = parentView.getWidth();
-            int parentHeight = parentView.getHeight();
-            if (Fu_Width != parentWidth || Fu_Height !=parentHeight) {
-                int x = (int) (Fu_Width * fun.xPercentage / 100.0f);
-                int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
-                fun.setX(x);
-                fun.setY(y);
-                ViewGroup.LayoutParams params =  getLayoutParams();
-                params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
-                params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
-                fun.setLayoutParams(params);
+        View parentView = (View) getParent();
+        globalLayoutListener = () -> {
+            if(fu_width==parentView.getWidth() || fu_height == parentView.getHeight()){
+                return;
             }
-            Fu_Width = parentWidth;
-            Fu_Height = parentHeight;
+            fu_width = parentView.getWidth();
+            fu_height = parentView.getHeight();
+            ViewGroup.LayoutParams layoutParams = getLayoutParams();
+            int width = (int) (fu_width * widthPercentage / 100.0f);
+            int height = (int) (fu_height * heightPercentage / 100.0f);
+            layoutParams.width = width;
+            layoutParams.height = height;
+            setLayoutParams(layoutParams);
+            int x = (int) (fu_width * xPercentage / 100.0f);
+            int y = (int) (fu_height * yPercentage / 100.0f);
+            setX(x);setY(y);
         };
-        // 添加监听器
-        parentView.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+        parentView.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (parentView != null && parentView.getViewTreeObserver().isAlive()) {
-            parentView.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
+        if (getParent() instanceof View parentView) {
+            if (globalLayoutListener != null) {
+                parentView.getViewTreeObserver().removeOnGlobalLayoutListener(globalLayoutListener);
+            }
         }
     }
+    int xPercentage=0,yPercentage=0,widthPercentage=0,heightPercentage=0;
 
     public void setSize(int widthPercentage, int heightPercentage) {
-        this.widthPercentage = widthPercentage;
-        this.heightPercentage = heightPercentage;
-        post(()->{
-            ViewGroup.LayoutParams params =  getLayoutParams();
-            params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
-            params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
-            fun.setLayoutParams(params);
-        });
-
+        this.widthPercentage=widthPercentage;
+        this.heightPercentage=heightPercentage;
     }
     public void setXY(int xPercentage, int yPercentage) {
-        this.xPercentage = xPercentage;
-        this.yPercentage = yPercentage;
-        post(()->{
-            int x = (int) (Fu_Width * fun.xPercentage / 100.0f);
-            int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
-            fun.setX(x);
-            fun.setY(y);
-        });
-
+        this.xPercentage=xPercentage;
+        this.yPercentage=yPercentage;
     }
     public void show(){
         this.setVisibility(View.VISIBLE);

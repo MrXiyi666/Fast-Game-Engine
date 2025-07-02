@@ -6,30 +6,25 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.luaj.vm2.LuaValue;
-import fast.game.engine.View.Fast_View;
+import fast.game.engine.View.Fun_View;
 import fast.game.engine.View.Fun_Button;
 import fast.game.engine.View.Fun_ImageView;
 import fast.game.engine.View.Fun_List;
 import fast.game.engine.View.Fun_Text;
-import fast.game.engine.View.List_Text;
+import fast.game.engine.View.Fun_List_Text;
 import fast.game.engine.fun.Fun;
 
 public class Fun_Window extends RelativeLayout {
     public Paint paint;
     public int window_radius=20;
-    public int widthPercentage = 0;
-    public int heightPercentage = 0;
-    public int xPercentage=0, yPercentage=0;
+
     public boolean update = false;
     public LuaValue Down=null;
     public LuaValue Up=null;
@@ -41,18 +36,9 @@ public class Fun_Window extends RelativeLayout {
     public LuaValue Close=null, Click;
     public int close_a=255, close_r=255, close_g=255, close_b=255;
     public boolean window_title = true, window_close;
-    public Fun_Window fun;
-    public int Fu_Width=0,Fu_Height=0;
-    public ViewTreeObserver.OnGlobalLayoutListener layoutListener;
-    public ViewGroup parentView;
-    private void init(Context context){
-        fun = this;
-        ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-        );
-        this.setLayoutParams(params);
-        this.setId(View.generateViewId());
+    public Fun_Window(Context context) {
+        super(context);
+
         paint = new Paint();
         paint.setAntiAlias(true);
         paint.setColor(Color.argb(ba,br,bg,bb));
@@ -64,66 +50,10 @@ public class Fun_Window extends RelativeLayout {
         this.setVisibility(View.INVISIBLE);
         postDelayed(()-> setVisibility(View.VISIBLE),10);
     }
-    public Fun_Window(Context context) {
-        super(context);
-        init(context);
+    public void addChild(View view){
+        this.addView(view);
     }
-
-    public Fun_Window(Context context, @Nullable AttributeSet attrs){
-        super(context, attrs);
-        init(context);
-    }
-    public Fun_Window(Context context, @Nullable AttributeSet attrs, int defStyleAttr){
-        super(context, attrs, defStyleAttr);
-        init(context);
-    }
-
-    public void addChild(Fast_View view){
-        post(()-> this.addView(view));
-    }
-    public void removeChild(Fast_View view){
-        this.removeView(view);
-    }
-    public void addChild(Fun_ImageView view){
-        post(()-> this.addView(view));
-    }
-    public void removeChild(Fun_ImageView view){
-        this.removeView(view);
-    }
-    public void addChild(Fun_Button view){
-        post(()-> this.addView(view));
-    }
-    public void removeChild(Fun_Button view){
-        this.removeView(view);
-    }
-    public void addChild(Fun_Window view){
-        post(()-> this.addView(view));
-    }
-    public void removeChild(Fun_Window view){
-        this.removeView(view);
-    }
-    public void addChild(Fun_Text view){
-        post(()-> this.addView(view));
-    }
-    public void removeChild(Fun_Text view){
-        this.removeView(view);
-    }
-    public void addChild(List_Text view){
-        post(()-> this.addView(view));
-    }
-    public void removeChild(List_Text view){
-        this.removeView(view);
-    }
-    public void addChild(Fun_List view){
-        post(()-> this.addView(view));
-    }
-    public void removeChild(Fun_List view){
-        this.removeView(view);
-    }
-    public void addChild(Fun_Scroll_Window_Text view){
-        post(()-> this.addView(view));
-    }
-    public void removeChild(Fun_Scroll_Window_Text view){
+    public void removeChild(View view){
         this.removeView(view);
     }
     public void removeChildAll(){
@@ -141,61 +71,49 @@ public class Fun_Window extends RelativeLayout {
         // 获取文本宽度
         return bounds.width();
     }
+    public int fu_width=0,fu_height=0;
+    private ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener;
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        // 获取父布局
-        parentView =  (ViewGroup)getParent();
-        if (parentView == null) {
-            return;
-        }
-        layoutListener = () -> {
-            int parentWidth = parentView.getWidth();
-            int parentHeight = parentView.getHeight();
-            if (Fu_Width != parentWidth || Fu_Height !=parentHeight) {
-                int x = (int) (Fu_Width * fun.xPercentage / 100.0f);
-                int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
-                fun.setX(x);
-                fun.setY(y);
-                ViewGroup.LayoutParams params =  getLayoutParams();
-                params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
-                params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
-                fun.setLayoutParams(params);
+        View parentView = (View) getParent();
+        globalLayoutListener = () -> {
+            if(fu_width==parentView.getWidth() || fu_height == parentView.getHeight()){
+                return;
             }
-            Fu_Width = parentWidth;
-            Fu_Height = parentHeight;
+            fu_width = parentView.getWidth();
+            fu_height = parentView.getHeight();
+            ViewGroup.LayoutParams layoutParams = getLayoutParams();
+            int width = (int) (fu_width * widthPercentage / 100.0f);
+            int height = (int) (fu_height * heightPercentage / 100.0f);
+            layoutParams.width = width;
+            layoutParams.height = height;
+            setLayoutParams(layoutParams);
+            int x = (int) (fu_width * xPercentage / 100.0f);
+            int y = (int) (fu_height * yPercentage / 100.0f);
+            setX(x);setY(y);
         };
-        // 添加监听器
-        parentView.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+        parentView.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
     }
+
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        // 移除监听器
-        if (parentView != null && parentView.getViewTreeObserver().isAlive()) {
-            parentView.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
+        if (getParent() instanceof View parentView) {
+            if (globalLayoutListener != null) {
+                parentView.getViewTreeObserver().removeOnGlobalLayoutListener(globalLayoutListener);
+            }
         }
     }
+    int xPercentage=0,yPercentage=0,widthPercentage=0,heightPercentage=0;
+
     public void setSize(int widthPercentage, int heightPercentage) {
-        this.widthPercentage = widthPercentage;
-        this.heightPercentage = heightPercentage;
-        post(()->{
-            ViewGroup.LayoutParams params = getLayoutParams();
-            params.width = (int) (Fu_Width * fun.widthPercentage / 100.0f);;
-            params.height = (int) (Fu_Height * fun.heightPercentage / 100.0f);
-            fun.setLayoutParams(params);
-        });
+        this.widthPercentage=widthPercentage;
+        this.heightPercentage=heightPercentage;
     }
     public void setXY(int xPercentage, int yPercentage) {
-        this.xPercentage = xPercentage;
-        this.yPercentage = yPercentage;
-        post(()->{
-            int x = (int) (Fu_Width * fun.xPercentage / 100.0f);
-            int y = (int) (Fu_Height * fun.yPercentage / 100.0f);
-            fun.setX(x);
-            fun.setY(y);
-        });
-
+        this.xPercentage=xPercentage;
+        this.yPercentage=yPercentage;
     }
     public void show(){
         this.setVisibility(View.VISIBLE);
@@ -204,12 +122,9 @@ public class Fun_Window extends RelativeLayout {
     public void hide(){
         this.setVisibility(View.GONE);
     }
-    public void openWindowTitle(boolean b){
+    public void setWindowTitle(boolean b){
         window_title = b;
-        if(!b){
-            setPadding(0, 0, 0, 0);
-        }
-        invalidate();
+        //invalidate();
     }
     public void openClick(){
         this.setSoundEffectsEnabled(true);

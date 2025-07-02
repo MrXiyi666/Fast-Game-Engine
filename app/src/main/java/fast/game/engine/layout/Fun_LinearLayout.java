@@ -1,18 +1,16 @@
-package fast.game.engine.View;
+package fast.game.engine.layout;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import androidx.appcompat.widget.AppCompatImageView;
+import android.widget.LinearLayout;
 
-
-public class Fun_ImageView extends AppCompatImageView {
-    public Fun_ImageView(Context context) {
+public class Fun_LinearLayout extends LinearLayout {
+    public Fun_LinearLayout(Context context) {
         super(context);
-        setScaleType(ScaleType.FIT_CENTER);
     }
+
     public int fu_width=0,fu_height=0;
     private ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener;
     @Override
@@ -57,5 +55,4 @@ public class Fun_ImageView extends AppCompatImageView {
         this.xPercentage=xPercentage;
         this.yPercentage=yPercentage;
     }
-
 }

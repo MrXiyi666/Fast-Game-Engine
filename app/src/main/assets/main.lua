@@ -1,19 +1,21 @@
 --======================主文件======================
-Java:addLua("", "Scene_Title.lua");
-
+Java:addLua("lua/", "Scene_Base.lua");
+Java:addLua("lua/", "Scene_Title.lua");
+Java:addLua("lua/", "Scene_Status.lua");
 
 function Create()
-    scene = Scene_Title:new();
-end
+    scene = Scene_Status:new();
+    scene:Create();
+end;
 
 function Start()
     scene:Start();
-end
+end;
 
 function Stop()
     scene:Stop();
-end
+end;
 
 function Destroy()
     scene:Destroy();
-end
+end;

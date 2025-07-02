@@ -2,17 +2,20 @@ package fast.game.engine.fun;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import fast.game.engine.View.Fast_View;
+import fast.game.engine.View.Fun_View;
+import fast.game.engine.View.Fun_ImageView;
 import fast.game.engine.View.Fun_List;
 import fast.game.engine.View.Fun_Text;
-import fast.game.engine.View.List_Text;
+import fast.game.engine.View.Fun_List_Text;
 import fast.game.engine.bitmap.Fun_Bitmap;
 import fast.game.engine.View.Fun_Button;
 import fast.game.engine.data.Fun_List_Horizontal_Data;
 import fast.game.engine.paint.Fun_Paint;
+import fast.game.engine.window.Fun_Scroll_Window;
 import fast.game.engine.window.Fun_Scroll_Window_Text;
 import fast.game.engine.window.Fun_Window;
 
@@ -34,8 +37,8 @@ public class JavaToLua {
     public void drawRGB(Canvas canvas, int r, int g, int b){
         canvas.drawRGB(r,g,b);
     }
-    public Fast_View Sprite(){
-        return new Fast_View(Fun.context);
+    public Fun_View Sprite(){
+        return new Fun_View(Fun.context);
     }
     public Fun_Button Button(){
         return new Fun_Button(Fun.context);
@@ -58,18 +61,23 @@ public class JavaToLua {
     }
     public void removeWindow(Fun_Window window){
         ViewGroup rootView = Fun.activity.findViewById(android.R.id.content);
+        TransitionManager.beginDelayedTransition(rootView);
         rootView.removeView(window);
     }
     public void removeWindowAll(){
         ViewGroup rootView = Fun.activity.findViewById(android.R.id.content);
+        TransitionManager.beginDelayedTransition(rootView);
         rootView.removeAllViews();
     }
 
-    public List_Text ListText(){
-        return new List_Text(Fun.context);
+    public Fun_List_Text ListText(){
+        return new Fun_List_Text(Fun.context);
     }
     public Fun_List List(){
         return new Fun_List(Fun.context);
+    }
+    public Fun_ImageView Image(){
+        return new Fun_ImageView(Fun.context);
     }
 
     public Fun_List_Horizontal_Data List_Horizontal_Data(){
@@ -90,6 +98,11 @@ public class JavaToLua {
 
     public Fun_Scroll_Window_Text Scroll_Window_Text(){
       return new Fun_Scroll_Window_Text(Fun.context);
-    };
+    }
+
+    public Fun_Scroll_Window Scroll_Window(){
+        return new Fun_Scroll_Window(Fun.context);
+    }
+
 
 }

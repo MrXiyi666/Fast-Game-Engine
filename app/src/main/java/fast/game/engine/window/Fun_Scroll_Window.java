@@ -1,88 +1,44 @@
-package fast.game.engine.View;
+package fast.game.engine.window;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.ListView;
-import org.luaj.vm2.LuaValue;
-import java.util.ArrayList;
-import java.util.List;
-import fast.game.engine.adapter.Fun_Adapter_Layout_Horizontal;
-import fast.game.engine.data.Fun_List_Horizontal_Data;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+
 import fast.game.engine.fun.Fun;
 
-public class Fun_List extends ListView {
+public class Fun_Scroll_Window extends ScrollView {
     public int window_radius=20;
     public int ba=150, br=0, bg=0, bb=0;
-    public Fun_Adapter_Layout_Horizontal adapter;
-    public LuaValue Close=null, Click=null;
-    private final List<Fun_List_Horizontal_Data> dataList = new ArrayList<>();
-    public Fun_List(Context context) {
+    private Fun_Window linear;
+    public Fun_Scroll_Window(Context context) {
         super(context);
+        linear = new Fun_Window(context);
+        linear.setSize(100,100);
+        linear.setWindowTitle(false);
+        this.setNestedScrollingEnabled(true);
         this.setVerticalScrollBarEnabled(false);
         this.setHorizontalScrollBarEnabled(false);
-        this.setNestedScrollingEnabled(true);
-        adapter = new Fun_Adapter_Layout_Horizontal(context, dataList);
-        this.setAdapter(adapter);
+        addView(linear);
         GradientDrawable background = new GradientDrawable();
-        background.setCornerRadius(Fun.DpToPx(window_radius));
         background.setColor(Color.argb(ba,br,bg,bb));
+        background.setCornerRadius(Fun.DpToPx(window_radius));
         this.setBackground(background);
         this.setClipToOutline(true);
         this.setVisibility(View.INVISIBLE);
         postDelayed(()-> setVisibility(View.VISIBLE),10);
-        this.setOnItemClickListener((parent, view, position, id) -> {
-            if(Click != null && Click.isfunction()){
-                Click.call(LuaValue.valueOf(position), LuaValue.valueOf(dataList.get(position).getName()));
-            }
-        });
     }
-    public void setHeight_Tage(int data){
-        adapter.setHeight_Tage(data);
-        adapter.notifyDataSetChanged();
+
+    public void addChild(View view){
+        linear.addView(view);
     }
-    public void addItem(Fun_List_Horizontal_Data item) {
-        dataList.add(item);
-        adapter.notifyDataSetChanged();
-    }
-    public void removeItem(int position) {
-        if (position >= 0 && position < dataList.size()) {
-            dataList.remove(position);
-            adapter.notifyDataSetChanged();
-        }
-    }
-    public void removeItem(String name) {
-        for(Fun_List_Horizontal_Data data : dataList){
-            if(data.getName().equals(name)){
-                dataList.remove(data);
-                adapter.notifyDataSetChanged();
-            }
-        }
-    }
-    public void update(){
-        adapter.notifyDataSetChanged();
-    }
-    public void setColor(int a, int r, int g, int b){
-        ba =a;br=r;bg=g;bb=b;
-        GradientDrawable background = new GradientDrawable();
-        background.setCornerRadius(Fun.DpToPx(window_radius));
-        background.setColor(Color.argb(ba,br,bg,bb));
-        this.setBackground(background);
-    }
-    public void setTextColor(int a, int r, int g, int b){
-        adapter.ta=a;
-        adapter.tr=r;
-        adapter.tg=g;
-        adapter.tb=b;
-        adapter.notifyDataSetChanged();
-    }
-    public void clearItems() {
-        dataList.clear();
-        adapter.notifyDataSetChanged();
+
+    public void removeChild(View view){
+        linear.removeView(view);
     }
 
     public int fu_width=0,fu_height=0;
@@ -130,10 +86,4 @@ public class Fun_List extends ListView {
         this.yPercentage=yPercentage;
     }
 
-    public void Destroy(){
-        if (adapter != null) {
-            this.setAdapter(null);
-            adapter=null;
-        }
-    }
 }
