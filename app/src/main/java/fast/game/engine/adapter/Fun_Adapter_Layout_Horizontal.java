@@ -57,6 +57,28 @@ public class Fun_Adapter_Layout_Horizontal extends BaseAdapter{
             convertView = getLayout(holder.imageView, holder.textView);
             convertView.setBackgroundColor(Color.TRANSPARENT);
             convertView.setVisibility(View.INVISIBLE);
+            View finalConvertView = convertView;
+            convertView.post(()->{
+                ViewGroup parentView =  (ViewGroup) finalConvertView.getParent();
+                if(parentView==null){
+                    return;
+                }
+                if(parentView.getHeight()<=0){
+                    return;
+                }
+                ViewGroup.LayoutParams params = finalConvertView.getLayoutParams();
+                if(height_tage < 10){
+                    height_tage=10;
+                }
+                int new_height = (int) (parentView.getHeight() * height_tage / 100.0f);
+                if(params.height != new_height){
+                    params.height = new_height;
+                    finalConvertView.setLayoutParams(params);
+                }
+                if(finalConvertView.getVisibility() == View.INVISIBLE){
+                    finalConvertView.setVisibility(View.VISIBLE);
+                }
+            });
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -64,29 +86,6 @@ public class Fun_Adapter_Layout_Horizontal extends BaseAdapter{
         holder.imageView.setImageBitmap(dataList.get(position).getBitmap());
         holder.textView.setTextColor(Color.argb(ta, tr, tg, tb));
         holder.textView.setText(dataList.get(position).getName());
-        View finalConvertView = convertView;
-        convertView.post(()->{
-            ViewGroup parentView =  (ViewGroup) finalConvertView.getParent();
-            if(parentView==null){
-                return;
-            }
-            if(parentView.getHeight()<=0){
-                return;
-            }
-            ViewGroup.LayoutParams params = finalConvertView.getLayoutParams();
-            if(height_tage < 10){
-                height_tage=10;
-            }
-            int new_height = (int) (parentView.getHeight() * height_tage / 100.0f);
-            if(params.height != new_height){
-                params.height = new_height;
-                finalConvertView.setLayoutParams(params);
-            }
-            if(finalConvertView.getVisibility() == View.INVISIBLE){
-                finalConvertView.setVisibility(View.VISIBLE);
-            }
-        });
-
         return convertView;
     }
 

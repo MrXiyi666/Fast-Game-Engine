@@ -6,9 +6,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-
 import fast.game.engine.fun.Fun;
 
 public class Fun_Scroll_Window extends ScrollView {

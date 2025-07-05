@@ -8,7 +8,6 @@ function Scene_Status:Create()
     self:Create_Background();
     self:Create_Sprite();
     self:Create_Basic_Information();
-    self:Create_List();
 end;
 --=======================状态背景图=======================
 function Scene_Status:Create_Background()
@@ -49,7 +48,6 @@ function Scene_Status:Create_Basic_Information()
     self.name_text:setSize(100, 5);
     self.name_text:setXY(2, 5);
     self.name_text:setTextColor(255, 100, 100, 200);
-    self.name_text:openAutoSize(5, 30);
     self.name_text:setStrokeWidth(3);
 
     self.name_data_text = Java:Text();
@@ -58,7 +56,6 @@ function Scene_Status:Create_Basic_Information()
     self.name_data_text:setSize(100, 5);
     self.name_data_text:setXY(25, 5);
     self.name_data_text:setTextColor(255, 0, 0, 0);
-    self.name_data_text:openAutoSize(5, 30);
     self.name_data_text:setStrokeWidth(3);
     self.name_data_text.Click = function()
         Java:Mess("修改名字");
@@ -70,7 +67,6 @@ function Scene_Status:Create_Basic_Information()
     self.boundary_text:setSize(100, 5);
     self.boundary_text:setXY(2, 10);
     self.boundary_text:setTextColor(255, 100, 100, 200);
-    self.boundary_text:openAutoSize(5, 30);
     self.boundary_text:setStrokeWidth(3);
 
     self.boundary_data_text = Java:Text();
@@ -79,7 +75,6 @@ function Scene_Status:Create_Basic_Information()
     self.boundary_data_text:setSize(100, 5);
     self.boundary_data_text:setXY(25, 10);
     self.boundary_data_text:setTextColor(255, 0, 0, 0);
-    self.boundary_data_text:openAutoSize(5, 30);
     self.boundary_data_text:setStrokeWidth(3);
 
     self.equip_text = Java:Text();
@@ -87,7 +82,6 @@ function Scene_Status:Create_Basic_Information()
     self.equip_text:setSize(100, 5);
     self.equip_text:setGravity(16);
     self.equip_text:setXY(2, 15);
-    self.equip_text:openAutoSize(5, 30);
     self.equip_text:setTextColor(255, 100, 100, 200);
     self.equip_text:setStrokeWidth(3);
 
@@ -97,7 +91,6 @@ function Scene_Status:Create_Basic_Information()
     self.arms_text:setSize(100, 5);
     self.arms_text:setXY(2, 20);
     self.arms_text:setTextColor(255, 100, 100, 200);
-    self.arms_text:openAutoSize(5, 30);
     self.arms_text:setStrokeWidth(3);
 
     self.arms_data_text = Java:Text();
@@ -106,7 +99,6 @@ function Scene_Status:Create_Basic_Information()
     self.arms_data_text:setSize(100, 5);
     self.arms_data_text:setXY(25, 20);
     self.arms_data_text:setTextColor(255, 0, 0, 0);
-    self.arms_data_text:openAutoSize(5, 30);
     self.arms_data_text:setStrokeWidth(3);
 
     self.dress_text = Java:Text();
@@ -115,7 +107,6 @@ function Scene_Status:Create_Basic_Information()
     self.dress_text:setSize(100, 5);
     self.dress_text:setXY(2, 25);
     self.dress_text:setTextColor(255, 100, 100, 200);
-    self.dress_text:openAutoSize(5, 30);
     self.dress_text:setStrokeWidth(3);
 
     self.dress_data_text = Java:Text();
@@ -124,7 +115,6 @@ function Scene_Status:Create_Basic_Information()
     self.dress_data_text:setSize(100, 5);
     self.dress_data_text:setXY(25, 25);
     self.dress_data_text:setTextColor(255, 0, 0, 0);
-    self.dress_data_text:openAutoSize(5, 30);
     self.dress_data_text:setStrokeWidth(3);
 
     self.bute_text = Java:Text();
@@ -133,10 +123,8 @@ function Scene_Status:Create_Basic_Information()
     self.bute_text:setSize(100, 5);
     self.bute_text:setXY(2, 35);
     self.bute_text:setTextColor(255, 100, 100, 200);
-    self.bute_text:openAutoSize(5, 30);
     self.bute_text:setStrokeWidth(3);
     self.scroll_text = Java:Scroll_Window_Text();
-    self.scroll_text:openAutoSize(20, 30);
     self.scroll_text:setText("力量：10\n速度：10\n防御：10\n敏捷：10\n幸运：10\n暴击：10\n\n");
     self.scroll_text:setSize(70, 30);
     self.scroll_text:setXY(25, 35);
@@ -155,24 +143,10 @@ function Scene_Status:Create_Basic_Information()
     self.scroll:addChild(self.scroll_text);
 end;
 --======================================================
-function Scene_Status:Create_List()
-    self.list_text = Java:ListText();
-    for i=0, 30 do
-        self.list_text:addItem("第" .. i .. "个");
-    end
-    self.list_text.Click = function(index, name)
-        Java:Mess("编号" .. index .. "\n名称" .. name);
-    end;
-    self.list_text:setSize(70, 30);
-    self.list_text:setXY(2, 50);
-    self.scroll:addChild(self.list_text);
-end
---======================================================
 function Scene_Status:Create_Scroll_Window()
     self.scroll = Java:Scroll_Window();
-    self.scroll:setSize(70,50);
-    --self.scroll:setWindowTitle(false);
-    self.scroll:setXY(15,20);
+    self.scroll:setSize(80, 60);
+    self.scroll:setXY(10,10);
     self.window_base:addChild(self.scroll);
 end;
 --======================================================

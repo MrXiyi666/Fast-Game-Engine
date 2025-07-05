@@ -3,7 +3,6 @@ package fast.game.engine.View;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -30,7 +29,6 @@ public class Fun_List_Text extends ListView {
         this.setId(View.generateViewId());
         this.setDividerHeight(Fun.DpToPx(1));
         adapter = new Fun_Adapter_Layout_Text(context, dataList);
-        adapter.setHeight_Tage(20);
         this.setAdapter(adapter);
         this.setOnItemClickListener((parent, view, position, id) -> {
             if(Click != null && Click.isfunction()){
@@ -60,8 +58,8 @@ public class Fun_List_Text extends ListView {
         adapter.tb=b;
         adapter.notifyDataSetChanged();
     }
-    public void setHeight_Tage(int data){
-        adapter.setHeight_Tage(data);
+    public void setText_Mix_Size(int data){
+        adapter.setText_Mix_Size(data);
         adapter.notifyDataSetChanged();
     }
     // 添加元素

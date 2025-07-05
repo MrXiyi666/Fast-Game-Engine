@@ -126,6 +126,12 @@ public class Fun_Window extends RelativeLayout {
         window_title = b;
         //invalidate();
     }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+    }
+
     public void openClick(){
         this.setSoundEffectsEnabled(true);
         this.setOnClickListener(view -> {

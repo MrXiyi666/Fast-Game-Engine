@@ -7,21 +7,14 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.core.widget.TextViewCompat;
-
 import java.util.List;
-
-import fast.game.engine.View.Fun_Text;
 import fast.game.engine.fun.Fun;
-import fast.game.engine.layout.Fun_LinearLayout;
 
 public class Fun_Adapter_Layout_Text extends BaseAdapter {
     private List<String> dataList;
     private Context context;
-    private int Height_Tage=10;
+    private int Text_Mix_Size=10;
     public int ta = 255, tr = 255, tg = 255, tb = 255;
     public Fun_Adapter_Layout_Text(Context context, List<String> dataList){
         this.context=context;
@@ -41,8 +34,9 @@ public class Fun_Adapter_Layout_Text extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
-    public void setHeight_Tage(int data){
-        Height_Tage = data;
+
+    public void setText_Mix_Size(int size){
+        Text_Mix_Size = size;
     }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -55,7 +49,7 @@ public class Fun_Adapter_Layout_Text extends BaseAdapter {
             holder.textView.setGravity(Gravity.CENTER);
             holder.textView.setPadding(Fun.DpToPx(5),Fun.DpToPx(5),Fun.DpToPx(5),Fun.DpToPx(5));
             holder.textView.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-            holder.textView.setAutoSizeTextTypeUniformWithConfiguration(5, 100, 1, TypedValue.COMPLEX_UNIT_SP);
+            holder.textView.setAutoSizeTextTypeUniformWithConfiguration(Text_Mix_Size, 100, 1, TypedValue.COMPLEX_UNIT_SP);
             convertView = holder.textView;
             convertView.setBackgroundColor(Color.TRANSPARENT);
             convertView.setVisibility(View.VISIBLE);
@@ -69,14 +63,5 @@ public class Fun_Adapter_Layout_Text extends BaseAdapter {
     }
     static class ViewHolder {
         TextView textView;
-    }
-    private View getLayout(Fun_Text textView){
-        Fun_LinearLayout linearLayout = new Fun_LinearLayout(context);
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
-        linearLayout.setSize(100,20);
-
-        textView.setPadding(Fun.DpToPx(5),Fun.DpToPx(5),Fun.DpToPx(5),Fun.DpToPx(5));
-        linearLayout.addView(textView);
-        return linearLayout;
     }
 }
